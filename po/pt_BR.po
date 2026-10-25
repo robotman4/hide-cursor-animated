@@ -6,7 +6,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: hide-cursor-drops\n"
-"Report-Msgid-Bugs-To: https://github.com/Wender13/hide-cursor-animated/issues\n"
+"Report-Msgid-Bugs-To: https://github.com/wvmj-dev/hide-cursor-animated/issues\n"
 "POT-Creation-Date: 2026-10-23 09:01-0300\n"
 "PO-Revision-Date: 2026-10-23 09:10-0300\n"
 "Last-Translator: Wender\n"

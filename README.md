@@ -32,7 +32,7 @@ Requires GNOME Shell 49 or 50 on Wayland.
 ### From source
 
 ```sh
-git clone https://github.com/Wender13/hide-cursor-animated.git
+git clone https://github.com/wvmj-dev/hide-cursor-animated.git
 cd hide-cursor-animated
 make install
 ```
@@ -44,7 +44,7 @@ Building needs `glib-compile-schemas` and `msgfmt` (packages `glib2` and
 
 ```sh
 make pack
-gnome-extensions install --force hide-cursor-drops@wender13.github.io.shell-extension.zip
+gnome-extensions install --force hide-cursor-drops@wvmj-dev.github.io.shell-extension.zip
 ```
 
 ### Enabling it
@@ -54,7 +54,7 @@ back in** once after installing, then enable it in the *Extensions* app or
 with:
 
 ```sh
-gnome-extensions enable hide-cursor-drops@wender13.github.io
+gnome-extensions enable hide-cursor-drops@wvmj-dev.github.io
 ```
 
 If you use another cursor-hiding extension, such as
@@ -70,7 +70,7 @@ To change how it behaves, open the preferences from the *Extensions* app
 (the gear next to the extension) or with:
 
 ```sh
-gnome-extensions prefs hide-cursor-drops@wender13.github.io
+gnome-extensions prefs hide-cursor-drops@wvmj-dev.github.io
 ```
 
 ### General
@@ -134,7 +134,7 @@ alert sounds are off.
 each hide did or didn't animate:
 
 ```sh
-gsettings --schemadir ~/.local/share/gnome-shell/extensions/hide-cursor-drops@wender13.github.io/schemas \
+gsettings --schemadir ~/.local/share/gnome-shell/extensions/hide-cursor-drops@wvmj-dev.github.io/schemas \
   set org.gnome.shell.extensions.hide-cursor-drops debug true
 journalctl --user -f -o cat /usr/bin/gnome-shell | grep hide-cursor-drops
 ```

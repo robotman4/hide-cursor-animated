@@ -1,4 +1,4 @@
-UUID := hide-cursor-drops@wender13.github.io
+UUID := hide-cursor-drops@wvmj-dev.github.io
 DEST := $(HOME)/.local/share/gnome-shell/extensions/$(UUID)
 BUILD := build-$(shell date +%s%N)
 # Loaded once per session (prefs.js: per preferences app run); changes here
@@ -22,7 +22,7 @@ locale/%/LC_MESSAGES/hide-cursor-drops.mo: po/%.po
 pot:
 	xgettext --from-code=UTF-8 --language=JavaScript --keyword=_ --keyword=N_ \
 		--no-wrap --add-comments=Translators --package-name=hide-cursor-drops \
-		--msgid-bugs-address=https://github.com/Wender13/hide-cursor-animated/issues \
+		--msgid-bugs-address=https://github.com/wvmj-dev/hide-cursor-animated/issues \
 		-o po/hide-cursor-drops.pot prefs.js
 	for l in $(LINGUAS); do msgmerge --update --no-wrap --backup=none po/$$l.po po/hide-cursor-drops.pot; done
 
