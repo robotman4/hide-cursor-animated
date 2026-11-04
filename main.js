@@ -66,7 +66,9 @@ export class HideCursor {
 
   enable() {
     this._tracker = global.backend.get_cursor_tracker()
-    this._seat = Clutter.get_default_backend().get_default_seat()
+    // Clutter.get_default_backend() was removed in GNOME 51; the backend now
+    // comes from the stage's context (as in the Shell's own code).
+    this._seat = global.stage.get_context().get_backend().get_default_seat()
     this._idleMonitor = global.backend.get_core_idle_monitor()
 
     this._hidden = false
