@@ -17,9 +17,8 @@ const READ_TIMEOUT_MS = 500
 // count when the pointer was resting this long; games grabbing the pointer
 // mid-motion don't.
 const APP_HIDE_MIN_IDLE_US = 700 * 1000
-// Typing only counts once the pointer has rested this long, and is told
-// apart from motion and clicks this long after the input arrives.
-const TYPING_MIN_REST_US = 300 * 1000
+// Typing is told apart from motion and clicks this long after the input
+// arrives.
 const TYPING_CHECK_MS = 60
 // Input other than pointer motion this recent means the user is typing
 // (apps such as VS Code and GTK text fields hide the cursor while typing).
@@ -135,14 +134,19 @@ export class HideCursor {
   _tick = () => {
     const now = GLib.get_monotonic_time()
     const timeout = this._settings.get_int('timeout') * 1000 * 1000
-    if (!this._hidden && now - this._lastMove > timeout && this._canHide('idle'))
+    const hideOnTyping = this._settings.get_boolean('hide-on-typing')
+    // With hide-on-typing off, typing keeps the cursor up: idle means no
+    // input at all, not just a resting pointer.
+    const idle = now - this._lastMove > timeout &&
+      (hideOnTyping || this._idleMonitor.get_idletime() * 1000 > timeout)
+    if (!this._hidden && idle && this._canHide('idle'))
       this._hide().catch(logError)
 
     // Re-armed here rather than on every input event, which would mean a
-    // callback per pointer motion.
-    if (!this._hidden && !this._activeWatch &&
-        this._settings.get_boolean('hide-on-typing') &&
-        now - this._lastMove > TYPING_MIN_REST_US)
+    // callback per pointer motion; at most one per tick while moving. Not
+    // waiting for the pointer to rest, so typing right after a click into
+    // a text field counts too.
+    if (!this._hidden && !this._activeWatch && hideOnTyping)
       this._activeWatch = this._idleMonitor.add_user_active_watch(this._onUserActive)
 
     return GLib.SOURCE_CONTINUE

@@ -77,8 +77,9 @@ gnome-extensions prefs hide-cursor-drops@wvmj-dev.github.io
 
 ![General preferences](docs/prefs-general.png)
 
-- **Hide after** – seconds without moving the mouse before the cursor hides
-  (1–60, default 5).
+- **Hide after** – seconds without input before the cursor hides (1–60,
+  default 5). With *Hide when typing* off, typing counts as input and keeps
+  the cursor up; with it on, only mouse motion does.
 - **Hide when typing** – hides the cursor as soon as you start typing,
   without waiting. GNOME doesn't let extensions see which keys you press,
   so any input that isn't mouse motion or a click counts: scrolling with
