@@ -67,9 +67,15 @@ export class HideCursor {
   enable() {
     this._tracker = global.backend.get_cursor_tracker()
     // Clutter.get_default_backend() was removed in GNOME 51; the backend now
-    // comes from the stage's context (as in the Shell's own code).
-    this._seat = global.stage.get_context().get_backend().get_default_seat()
+    // comes from the stage's context (as in the Shell's own code). Older
+    // versions may lack the context, so fall back to the default backend.
+    const backend = global.stage.get_context?.()?.get_backend?.() ??
+      Clutter.get_default_backend()
+    this._seat = backend.get_default_seat()
     this._idleMonitor = global.backend.get_core_idle_monitor()
+    // GNOME 49 added a counted inhibitor; GNOME 48 only has a visibility
+    // flag, which mutter itself turns back on for pointer input.
+    this._canInhibit = typeof this._tracker.inhibit_cursor_visibility === 'function'
 
     this._hidden = false
     this._hidVisibleCursor = false
@@ -89,6 +95,8 @@ export class HideCursor {
 
     this._positionId = this._tracker.connect('position-invalidated', this._onMove)
     this._cursorChangedId = this._tracker.connect('cursor-changed', this._onCursorChanged)
+    this._visibilityId = this._canInhibit
+      ? 0 : this._tracker.connect('visibility-changed', this._onVisibilityChanged)
     this._timer = GLib.timeout_add(GLib.PRIORITY_DEFAULT, TICK_MS, this._tick)
   }
 
@@ -99,6 +107,9 @@ export class HideCursor {
     this._positionId = null
     this._tracker.disconnect(this._cursorChangedId)
     this._cursorChangedId = null
+    if (this._visibilityId)
+      this._tracker.disconnect(this._visibilityId)
+    this._visibilityId = null
     if (this._activeWatch)
       this._idleMonitor.remove_watch(this._activeWatch)
     this._activeWatch = 0
@@ -355,15 +366,38 @@ export class HideCursor {
   _inhibitVisibility() {
     if (this._visibilityInhibited)
       return
-    this._tracker.inhibit_cursor_visibility()
     this._visibilityInhibited = true
+    if (this._canInhibit)
+      this._tracker.inhibit_cursor_visibility()
+    else
+      this._tracker.set_pointer_visible(false)
   }
 
   _uninhibitVisibility() {
     if (!this._visibilityInhibited || this._hidden)
       return
-    this._tracker.uninhibit_cursor_visibility()
     this._visibilityInhibited = false
+    if (this._canInhibit)
+      this._tracker.uninhibit_cursor_visibility()
+    else
+      this._tracker.set_pointer_visible(true)
+  }
+
+  _onVisibilityChanged = () => {
+    // GNOME 48: mutter shows the pointer again on any pointer event, such as
+    // a click or scroll without motion. Follow it instead of fighting it.
+    // A show animation in progress already let the cursor go.
+    if (!this._hidden || !this._visibilityInhibited || !this._tracker.get_pointer_visible())
+      return
+    const [x, y] = global.get_pointer()
+    if (x !== this._lastPointer[0] || y !== this._lastPointer[1]) {
+      // Motion: same as position-invalidated, which may not have run yet.
+      this._onMove()
+      return
+    }
+    this._debug('pointer shown by mutter (click or scroll)')
+    this._lastMove = GLib.get_monotonic_time()
+    this._show({animate: false})
   }
 
   _cancelAnimation() {

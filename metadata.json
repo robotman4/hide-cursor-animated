@@ -5,6 +5,7 @@
   "settings-schema": "org.gnome.shell.extensions.hide-cursor-drops",
   "gettext-domain": "hide-cursor-drops",
   "shell-version": [
+    "48",
     "49",
     "50",
     "51"

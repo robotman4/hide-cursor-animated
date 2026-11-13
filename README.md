@@ -25,7 +25,7 @@ beam, busy spinner, ...).
   files.
 - Per-app exclusions: the cursor is never hidden over the apps you pick.
 
-Requires GNOME Shell 49, 50 or 51 on Wayland.
+Requires GNOME Shell 48, 49, 50 or 51 on Wayland.
 
 ## Installation
 
