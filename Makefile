@@ -32,6 +32,7 @@ install: schemas/gschemas.compiled $(MO)
 	find $(DEST) -mindepth 1 -maxdepth 1 ! -name $(BUILD) -exec rm -rf {} +
 	mkdir -p $(DEST)/schemas
 	cp $(STATIC) $(DEST)/
+	mkdir -p locale
 	cp -r sounds locale $(DEST)/
 	cp $(CODE) $(DEST)/$(BUILD)/
 	cp schemas/*.gschema.xml schemas/gschemas.compiled $(DEST)/schemas/
